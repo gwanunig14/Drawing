@@ -1,3 +1,4 @@
+import { mapColors } from "colors";
 import React from "react";
 
 interface OvalIslandProps {
@@ -12,7 +13,7 @@ interface OvalIslandProps {
 
 const OvalIsland: React.FC<OvalIslandProps> = ({
   seed = 1,
-  fill = "#4A5568",
+  fill = mapColors.mountain,
   regenerateTrigger = 0,
   size = 1,
   rx,

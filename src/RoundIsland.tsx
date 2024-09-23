@@ -1,3 +1,4 @@
+import { mapColors } from "colors";
 import React, { useMemo } from "react";
 
 interface RoundIslandProps {
@@ -9,7 +10,7 @@ interface RoundIslandProps {
 
 const RoundIsland: React.FC<RoundIslandProps> = ({
   seed = 1,
-  fill = "#4A5568",
+  fill = mapColors.mountain,
   regenerateTrigger = 0,
   size = 1,
 }) => {

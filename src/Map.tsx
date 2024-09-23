@@ -64,12 +64,12 @@ const Map = () => {
         <rect width="2040" height="2040" fill={mapColors.water} />
 
         {/* Island */}
-        <path d={coastlinePath} fill="#4A5568" />
+        <path d={coastlinePath} fill={mapColors.mountain} />
         <CrescentSea />
         <Inlet />
         <Islands
           numLargeIslands={9}
-          numSmallIslands={800}
+          numSmallIslands={500}
           centerX={1100}
           centerY={1100}
           regenerateTrigger={regenerateTrigger}
