@@ -11,6 +11,7 @@ interface IslandData {
   ry: number;
   rotation: number;
   terrainType: string;
+  label: number;
 }
 
 interface IslandsProps {
@@ -42,7 +43,10 @@ const Islands: React.FC<IslandsProps> = ({
     return (x - Math.floor(x)) * (max - min) + min;
   };
 
-  const isIntersecting = (island1: IslandData, island2: IslandData) => {
+  const isIntersecting = (
+    island1: Omit<IslandData, "label">,
+    island2: IslandData
+  ) => {
     const dx = island1.x - island2.x;
     const dy = island1.y - island2.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -56,8 +60,9 @@ const Islands: React.FC<IslandsProps> = ({
   const islandData = useMemo(() => {
     const data: IslandData[] = [];
     const islandTypes = ["round", "oval"];
-    const totalAttempts = 10000; // Increased attempts
+    const totalAttempts = 10000;
     let attemptCount = 0;
+    let labelCounter = 1; // Initialize label counter
 
     const terrainCounts = {
       volcanic: 0,
@@ -84,7 +89,7 @@ const Islands: React.FC<IslandsProps> = ({
     const generateIsland = (
       isLarge: boolean,
       relaxConstraints: boolean = false
-    ): IslandData | null => {
+    ): Omit<IslandData, "label"> | null => {
       const seed = Math.floor(Math.random() * 1000000);
       const type = islandTypes[Math.floor(Math.random() * islandTypes.length)];
 
@@ -131,7 +136,17 @@ const Islands: React.FC<IslandsProps> = ({
       const rotation = random(0, 360, seed);
       const terrainType = isLarge ? "forest" : getRandomTerrainType(seed);
 
-      return { x, y, seed, type, size, rx, ry, rotation, terrainType };
+      return {
+        x,
+        y,
+        seed,
+        type,
+        size,
+        rx,
+        ry,
+        rotation,
+        terrainType,
+      };
     };
 
     // Generate large islands
@@ -142,9 +157,9 @@ const Islands: React.FC<IslandsProps> = ({
       let island = generateIsland(true);
       if (
         island &&
-        !data.some((existingIsland) => isIntersecting(existingIsland, island!))
+        !data.some((existingIsland) => isIntersecting(island, existingIsland))
       ) {
-        data.push(island);
+        data.push({ ...island, label: labelCounter++ });
       }
     }
 
@@ -156,9 +171,9 @@ const Islands: React.FC<IslandsProps> = ({
       let island = generateIsland(false);
       if (
         island &&
-        !data.some((existingIsland) => isIntersecting(existingIsland, island!))
+        !data.some((existingIsland) => isIntersecting(island, existingIsland))
       ) {
-        data.push(island);
+        data.push({ ...island, label: labelCounter++ });
       }
     }
 
@@ -190,10 +205,26 @@ const Islands: React.FC<IslandsProps> = ({
       transform: `rotate(${island.rotation} 150 150)`,
     };
 
-    return island.type === "round" ? (
-      <circle {...props} r={island.rx} />
-    ) : (
-      <ellipse {...props} />
+    return (
+      <g>
+        {island.type === "round" ? (
+          <circle {...props} r={island.rx} />
+        ) : (
+          <ellipse {...props} />
+        )}
+        <text
+          x="150"
+          y="150"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="white"
+          fontSize={island.size >= 0.8 ? "20" : "10"}
+          fontWeight="bold"
+          transform={`rotate(-${island.rotation} 150 150)`}
+        >
+          {island.label}
+        </text>
+      </g>
     );
   };
 
